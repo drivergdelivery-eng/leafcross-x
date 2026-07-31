@@ -1,5 +1,5 @@
 export const extractedAssets = {
-  logo: "/assets/extracted/leaf-cross-logo.png",
+  logo: "/logos/lc-bio-logo-white.png",
   nug: "/assets/extracted/nug-transparent.png",
   heroFrame: "/assets/extracted/hero-frame.png",
   homeClip: "/assets/extracted/home-clip.mp4",
@@ -18,9 +18,12 @@ export const extractedAssets = {
     blogLizaSummer: "/assets/wordpress/Blog_CBG_pexels_liza_summer.jpg"
   },
   brandLogos: {
-    allday: "/assets/extracted/allday-logo.svg",
+    allday: "/logos/allday-logo-new.png",
+    nelsonCraft: "/logos/nelson-craft-logo-new.png",
+    gcExotics: "/logos/gc-exotics-logo-new.png",
+    haidaGwaii: "/logos/haida-gwaii-logo.jpg",
     blackEdition: "/assets/extracted/black-edition-logo.svg",
-    leafCross: "/assets/extracted/leafcross-brand-logo.svg"
+    leafCross: "/logos/lc-bio-logo-white.png"
   }
 };
 

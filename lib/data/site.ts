@@ -42,7 +42,7 @@ export const brands = [
 ];
 
 export const paymentInstructions = {
-  eTransfer: "Send E-Transfer payments to info@leafcross.com.",
+  eTransfer: "Send E-Transfer payments to payment@leafcross.com.",
   bankWire: "Bank wire details will be provided on the invoice or by admin.",
   directDeposit:
     "Direct deposit details will be provided on the invoice or by admin.",

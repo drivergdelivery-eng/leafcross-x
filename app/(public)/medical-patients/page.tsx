@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Medical Patients | Leaf Cross Biomedical",
+  description: "Leaf Cross Biomedical offers high-quality cannabis products for registered medical patients through licensed retailers across Canada.",
+};
 
 const categories = [
   { label: "Dried Cannabis", img: "/assets/wordpress/MedicalPatientsShop_Slider_2-2.png", copy: "Whole flower, small buds, and milled formats. Available in Sativa, Indica, Hybrid, and CBD." },

@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shop | Leaf Cross Biomedical",
+  description: "Browse Leaf Cross Biomedical cannabis products — premium dried flower, pre-rolls, and concentrates available through licensed Canadian retailers.",
+};
 
 const categories = [
   { label: "Dried Cannabis", img: "/assets/wordpress/MedicalPatientsShop_Slider_2-2.png" },

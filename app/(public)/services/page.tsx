@@ -1,25 +1,30 @@
+export const dynamic = "force-dynamic";
+
+import type { Metadata } from "next";
+import { getSiteContent } from "@/lib/data/getSiteContent";
 import { PageHero } from "@/components/public/PageHero";
 
-export default function ServicesPage() {
+export const metadata: Metadata = {
+  title: "Services | Leaf Cross Biomedical",
+  description: "Health Canada licensed cannabis processing, co-processing, white label, and direct delivery services from Leaf Cross Biomedical in Nelson, BC.",
+};
+
+export default async function ServicesPage() {
+  const c = await getSiteContent();
   return (
     <>
       <PageHero
         eyebrow="Services"
-        title="What We Do"
-        subtitle="Retailer support, processing coordination, wholesale ordering, and shipment workflows."
-        image="/assets/wordpress/Home_Card_Services.png"
+        title={c.servicesHeroTitle}
+        subtitle={c.servicesHeroSubtitle}
+        image={c.servicesHeroImage}
       />
       <section className="section darkSection">
         <div className="container statementGrid">
-          {[
-            ["Product Management", "Admin and manager users can safely manage products, brands, prices, and availability."],
-            ["Retailer Access", "Retailers apply, get reviewed, and access private menu content only after approval."],
-            ["Order Review", "Orders are submitted as B2B requests, then reviewed before payment and shipment."],
-            ["Sales Support", "Payment instructions, invoices, and order status updates are handled in one portal."]
-          ].map(([title, copy]) => (
+          {c.servicesCards.map(({ title, body }) => (
             <article className="statementCard" key={title}>
               <h2>{title}</h2>
-              <p>{copy}</p>
+              <p>{body}</p>
             </article>
           ))}
         </div>

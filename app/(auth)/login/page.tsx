@@ -19,7 +19,7 @@ export default function LoginPage() {
               style={{ filter: "brightness(0) invert(1)", marginBottom: 28 }}
             />
             <p style={{ margin: "0 0 10px", color: "#00f6ff", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
-              Retailer / Partner Login
+              Retail Partner Login
             </p>
           </div>
 

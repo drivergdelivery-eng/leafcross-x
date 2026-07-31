@@ -1,88 +1,127 @@
 "use client";
-import { useState } from "react";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import type { SiteContent } from "@/lib/data/siteContent";
 
-type Field = { key: string; label: string; value: string; multiline?: boolean };
-type Section = { id: string; title: string; fields: Field[] };
+type EditableField = {
+  key: keyof SiteContent;
+  label: string;
+  multiline?: boolean;
+};
 
-const initial: Section[] = [
+type EditorSection = {
+  id: string;
+  title: string;
+  fields: EditableField[];
+};
+
+const sections: EditorSection[] = [
   {
     id: "hero",
     title: "Homepage Hero",
     fields: [
-      { key: "hero_heading",    label: "Main Heading",  value: "Premium BC Cannabis" },
-      { key: "hero_subheading", label: "Subheading",    value: "Health Canada licensed cannabis processor in Nelson, BC." },
-      { key: "hero_cta",        label: "CTA Button Text",value: "View Our Brands" },
+      { key: "heroLicense",      label: "License Text (below logo)" },
+      { key: "heroCtaPrimary",   label: "Primary Button Text" },
+      { key: "heroCtaSecondary", label: "Secondary Button Text" },
     ],
   },
   {
-    id: "about",
-    title: "About Section",
+    id: "pheno",
+    title: "Homepage — Philosophy",
     fields: [
-      { key: "about_tagline", label: "Tagline", value: "Rooted in craft. Grown with purpose." },
-      { key: "about_body", label: "Body Text", multiline: true, value: "Leaf Cross Biomedical is a Health Canada licensed cannabis processor based in Nelson, BC, committed to delivering premium craft cannabis to licensed retailers across British Columbia." },
+      { key: "phenoHuntTitle", label: "Why Pheno Hunt — Title" },
+      { key: "phenoHuntBody",  label: "Why Pheno Hunt — Body", multiline: true },
+      { key: "phenoHuntCta",   label: "Why Pheno Hunt — Button Text" },
+      { key: "partnerTitle",   label: "Partner Section — Title" },
+      { key: "partnerBody",    label: "Partner Section — Body", multiline: true },
+      { key: "partnerCta",     label: "Partner Section — Link Text" },
     ],
   },
   {
-    id: "allday",
-    title: "AllDay Cannabis Brand",
+    id: "retailers",
+    title: "Retailers Page",
     fields: [
-      { key: "allday_tagline", label: "Tagline", value: "Community. Quality. Fun." },
-      { key: "allday_body", label: "Brand Description", multiline: true, value: "Allday Cannabis champions small craft growers while bringing vibrant, affordable, high-quality cannabis to communities across BC." },
-    ],
-  },
-  {
-    id: "blk",
-    title: "AllDay BLK Edition Brand",
-    fields: [
-      { key: "blk_tagline", label: "Tagline", value: "Unique cultivars. Premium craft. Smokes smooth." },
-      { key: "blk_body", label: "Brand Description", multiline: true, value: "AllDay BLK Edition represents the pinnacle of craft cannabis — rare cultivars, premium processing, and a smooth experience from start to finish." },
+      { key: "retailersNote",          label: "Ordering Note",   multiline: true },
+      { key: "retailersLoginSubtitle", label: "Login Subtitle" },
     ],
   },
   {
     id: "contact",
     title: "Contact Information",
     fields: [
-      { key: "contact_email",   label: "Email",   value: "info@leafcross.com" },
-      { key: "contact_phone",   label: "Phone",   value: "1-800-LEAFCROSS" },
-      { key: "contact_address", label: "Address", value: "Nelson, BC, Canada" },
+      { key: "contactEmail",    label: "Email" },
+      { key: "contactPhone",    label: "Phone" },
+      { key: "contactAddress",  label: "Address" },
+      { key: "contactBodyText", label: "Page Body Text", multiline: true },
     ],
   },
   {
-    id: "retailers_note",
-    title: "Retailers Page Note",
+    id: "services",
+    title: "Services Page",
     fields: [
-      { key: "retailers_note_body", label: "Note Text", multiline: true, value: "We have NO case limit per SKU. We reserve the right to cancel your order if payment is not received within 48 hours. To ensure shipping the same day, all payments must be received before 11am, or else it will be processed on the next business day. All sales are final." },
+      { key: "servicesHeroTitle",    label: "Hero Title" },
+      { key: "servicesHeroSubtitle", label: "Hero Subtitle", multiline: true },
     ],
   },
 ];
 
 export default function WebsiteEditorClient() {
-  const [sections, setSections] = useState<Section[]>(initial);
-  const [openId, setOpenId] = useState<string | null>("hero");
-  const [saved, setSaved] = useState<Record<string, boolean>>({});
+  const [content, setContent]   = useState<Partial<SiteContent>>({});
+  const [loading, setLoading]   = useState(true);
+  const [openId, setOpenId]     = useState<string | null>("hero");
+  const [saving, setSaving]     = useState(false);
+  const [saved, setSaved]       = useState(false);
+  const [error, setError]       = useState("");
 
-  const updateField = (sectionId: string, key: string, value: string) => {
-    setSections(prev => prev.map(s =>
-      s.id === sectionId
-        ? { ...s, fields: s.fields.map(f => f.key === key ? { ...f, value } : f) }
-        : s
-    ));
-    setSaved(prev => ({ ...prev, [sectionId]: false }));
+  useEffect(() => {
+    fetch("/api/admin/site-content")
+      .then(r => r.json())
+      .then((data: SiteContent) => setContent(data))
+      .catch(() => setError("Failed to load current content."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const updateField = (key: keyof SiteContent, value: string) => {
+    setContent(prev => ({ ...prev, [key]: value }));
+    setSaved(false);
+    setError("");
   };
 
-  const handleSave = (sectionId: string) => {
-    // TODO: persist to Supabase site_settings table
-    setSaved(prev => ({ ...prev, [sectionId]: true }));
-    setTimeout(() => setSaved(prev => ({ ...prev, [sectionId]: false })), 2500);
+  const handleSave = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/site-content", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(content),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Save failed");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "40px 0", color: "rgba(255,255,255,0.4)" }}>
+        <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
+        <span style={{ fontSize: 14 }}>Loading current content…</span>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+      {/* Sections */}
       {sections.map(section => {
         const isOpen = openId === section.id;
-        const isSaved = saved[section.id];
-
         return (
           <div key={section.id} style={{
             background: "#111", border: "1px solid rgba(255,255,255,0.07)",
@@ -97,64 +136,84 @@ export default function WebsiteEditorClient() {
               }}
             >
               <span style={{ fontSize: 15, fontWeight: 700 }}>{section.title}</span>
-              {isOpen ? <ChevronUp size={18} color="rgba(255,255,255,0.4)" /> : <ChevronDown size={18} color="rgba(255,255,255,0.4)" />}
+              {isOpen
+                ? <ChevronUp size={18} color="rgba(255,255,255,0.4)" />
+                : <ChevronDown size={18} color="rgba(255,255,255,0.4)" />}
             </button>
 
             {isOpen && (
               <div style={{ padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
-                {section.fields.map(field => (
-                  <div key={field.key}>
-                    <label style={{
-                      display: "block", marginBottom: 8,
-                      color: "rgba(255,255,255,0.45)", fontSize: 11,
-                      fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
-                    }}>{field.label}</label>
-                    {field.multiline ? (
-                      <textarea
-                        value={field.value}
-                        onChange={e => updateField(section.id, field.key, e.target.value)}
-                        rows={4}
-                        style={{
-                          width: "100%", background: "rgba(255,255,255,0.06)",
-                          border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
-                          color: "#fff", fontSize: 14, padding: "12px 14px",
-                          outline: "none", resize: "vertical", boxSizing: "border-box",
-                          lineHeight: 1.6,
-                        }}
-                      />
-                    ) : (
-                      <input
-                        value={field.value}
-                        onChange={e => updateField(section.id, field.key, e.target.value)}
-                        style={{
-                          width: "100%", background: "rgba(255,255,255,0.06)",
-                          border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
-                          color: "#fff", fontSize: 14, padding: "10px 14px",
-                          outline: "none", boxSizing: "border-box",
-                        }}
-                      />
-                    )}
-                  </div>
-                ))}
-                <button
-                  onClick={() => handleSave(section.id)}
-                  style={{
-                    alignSelf: "flex-start",
-                    display: "flex", alignItems: "center", gap: 6,
-                    padding: "10px 28px", borderRadius: 8, border: "none", cursor: "pointer",
-                    background: isSaved ? "#16a34a" : "#00f6ff",
-                    color: "#000", fontSize: 13, fontWeight: 800,
-                    textTransform: "uppercase", letterSpacing: "0.06em",
-                    transition: "background 0.2s",
-                  }}
-                >
-                  {isSaved ? <><Check size={14} strokeWidth={3} /> Saved</> : "Save Section"}
-                </button>
+                {section.fields.map(field => {
+                  const val = (content[field.key] as string) ?? "";
+                  return (
+                    <div key={field.key as string}>
+                      <label style={{
+                        display: "block", marginBottom: 8,
+                        color: "rgba(255,255,255,0.45)", fontSize: 11,
+                        fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
+                      }}>{field.label}</label>
+                      {field.multiline ? (
+                        <textarea
+                          value={val}
+                          onChange={e => updateField(field.key, e.target.value)}
+                          rows={4}
+                          style={{
+                            width: "100%", background: "rgba(255,255,255,0.06)",
+                            border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
+                            color: "#fff", fontSize: 14, padding: "12px 14px",
+                            outline: "none", resize: "vertical", boxSizing: "border-box",
+                            lineHeight: 1.6,
+                          }}
+                        />
+                      ) : (
+                        <input
+                          value={val}
+                          onChange={e => updateField(field.key, e.target.value)}
+                          style={{
+                            width: "100%", background: "rgba(255,255,255,0.06)",
+                            border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
+                            color: "#fff", fontSize: 14, padding: "10px 14px",
+                            outline: "none", boxSizing: "border-box",
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
         );
       })}
+
+      {/* Single save button for all sections */}
+      <div style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 8 }}>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "12px 36px", borderRadius: 8, border: "none",
+            cursor: saving ? "default" : "pointer",
+            background: saved ? "#16a34a" : saving ? "rgba(0,246,255,0.5)" : "#00f6ff",
+            color: "#000", fontSize: 13, fontWeight: 800,
+            textTransform: "uppercase", letterSpacing: "0.07em",
+            transition: "background 0.2s",
+          }}
+        >
+          {saved
+            ? <><Check size={15} strokeWidth={3} /> Saved to Site</>
+            : saving ? "Saving…" : "Save All Changes"}
+        </button>
+        {error && (
+          <p style={{ margin: 0, color: "#f87171", fontSize: 13 }}>{error}</p>
+        )}
+        {!error && (
+          <p style={{ margin: 0, color: "rgba(255,255,255,0.25)", fontSize: 12 }}>
+            Changes go live on the public site immediately after saving.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

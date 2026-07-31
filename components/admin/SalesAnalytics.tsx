@@ -1,7 +1,39 @@
 "use client";
-import { useState, useMemo } from "react";
-import { TrendingUp, TrendingDown, Package, DollarSign, ShoppingCart, Users, ChevronDown } from "lucide-react";
-import { useOrders, calcTotals } from "@/lib/store/ordersContext";
+import { useState, useMemo, useEffect } from "react";
+import { TrendingUp, Package, DollarSign, ShoppingCart, Users, ChevronDown } from "lucide-react";
+
+const GST = 0.05;
+const SHIP = 28.99;
+
+type OrderItem = { name: string; type: string; qty: number; unitPrice: number };
+type Order = {
+  id: string; orderNumber: string; submitted: string;
+  paymentStatus: "pending" | "paid" | "declined";
+  retailer: string; items: OrderItem[];
+};
+
+function calcTotals(items: OrderItem[]) {
+  const sub = items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
+  return { sub, gst: +(sub * GST).toFixed(2), total: +(sub + sub * GST + SHIP).toFixed(2) };
+}
+
+function mapRow(row: Record<string, unknown>): Order {
+  const retailer = row.retailers as Record<string, unknown> | null;
+  const rawItems = (row.order_items as Record<string, unknown>[]) || [];
+  return {
+    id:            row.id as string,
+    orderNumber:   (row.order_number as string) || "",
+    submitted:     ((row.submitted_at as string) || "").replace("T", " ").slice(0, 16),
+    paymentStatus: (row.payment_status as "pending" | "paid" | "declined") || "pending",
+    retailer:      (retailer?.business_name as string) || "Unknown",
+    items:         rawItems.map(i => ({
+      name:      (i.product_name as string) || "",
+      type:      (i.sku as string) || "",
+      qty:       (i.quantity as number) || 0,
+      unitPrice: (i.unit_price as number) || 0,
+    })),
+  };
+}
 
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -87,8 +119,15 @@ function DonutChart({ segments }: { segments: { pct: number; color: string }[] }
 const MONTH_OPTIONS = buildMonthOptions();
 
 export default function SalesAnalytics() {
-  const { orders } = useOrders();
+  const [orders, setOrders] = useState<Order[]>([]);
   const [metric, setMetric] = useState<"revenue" | "orders">("revenue");
+
+  useEffect(() => {
+    fetch("/api/admin/orders")
+      .then(r => r.json())
+      .then(j => { if (j.data) setOrders((j.data as Record<string, unknown>[]).map(mapRow)); })
+      .catch(() => {});
+  }, []);
   const [period, setPeriod] = useState<string>("test");
   const isDemo = period === "test";
 

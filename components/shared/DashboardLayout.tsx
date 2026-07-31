@@ -5,7 +5,7 @@ import { PublicStyles } from "@/components/public/PublicStyles";
 import SignOutButton from "@/components/auth/SignOutButton";
 
 type DashboardLayoutProps = {
-  title: string;
+  title: React.ReactNode;
   role: "admin" | "retailer";
   links: Array<{ label: string; href: string }>;
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export function DashboardLayout({ title, role, links, children }: DashboardLayou
       <PublicStyles />
       <div className="dashboardShell">
         <aside className="dashboardNav">
-          <Image src={extractedAssets.logo} alt="Leaf Cross Biomedical" width={150} height={52} />
+          <Image src={extractedAssets.logo} alt="Leaf Cross Biomedical" width={150} height={52} style={{ filter: "brightness(0) invert(1)" }} />
           {links.map((link) => (
             <Link href={link.href} key={link.href}>
               {link.label}

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-const tabs = [
+type TabItem = { title: string; body: string };
+
+const defaultTabs: TabItem[] = [
   {
     title: "Unique Cultivars",
     body: "We are dedicated to sharing unique genetics with the world. Our in-house breeding program is constantly evolving, driven by a relentless pursuit of new and unique cultivars. We delve deep into research and development to create groundbreaking and exclusive strains.",
@@ -21,7 +23,11 @@ const tabs = [
   },
 ];
 
-export function BlkEditionSection() {
+const defaultBody = "At Allday Black Edition, we redefine cultivation with a blend of cutting-edge technology and hands-on craftsmanship. Our focus on efficiency, sustainability, and precision creates a perfect environment for growing. We’re committed to discovering and nurturing unique cultivars, allowing each plant to express its full potential in terms of potency and distinctive cannabinoid and terpene profiles. Through a careful balance of patience and love in the curing process, we ensure that our products stand out with exceptional quality and individuality. Join us in exploring the art and science behind cannabis cultivation.";
+
+export function BlkEditionSection({ tabs: propTabs, body: propBody }: { tabs?: TabItem[]; body?: string }) {
+  const tabs = propTabs ?? defaultTabs;
+  const body = propBody ?? defaultBody;
   const [open, setOpen] = useState<number | null>(null);
 
   return (
@@ -138,7 +144,7 @@ export function BlkEditionSection() {
             fontSize: "clamp(15px, 1.5vw, 18px)",
             lineHeight: 1.8,
           }}>
-            At Allday Black Edition, we redefine cultivation with a blend of cutting-edge technology and hands-on craftsmanship. Our focus on efficiency, sustainability, and precision creates a perfect environment for growing. We&apos;re committed to discovering and nurturing unique cultivars, allowing each plant to express its full potential in terms of potency and distinctive cannabinoid and terpene profiles. Through a careful balance of patience and love in the curing process, we ensure that our products stand out with exceptional quality and individuality. Join us in exploring the art and science behind cannabis cultivation.
+            {body}
           </p>
         </div>
       </div>

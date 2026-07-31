@@ -7,11 +7,7 @@ export function PublicFooter() {
     <footer className="publicFooter">
       <div className="container footerGrid">
         <div>
-          <Image src={extractedAssets.logo} alt="Leaf Cross Biomedical" width={154} height={52} />
-          <p>
-            Health Canada licensed cannabis processor and retailer-only ordering
-            partner in Nelson, BC.
-          </p>
+          <Image src={extractedAssets.logo} alt="Leaf Cross Biomedical" width={220} height={73} style={{ width: 220, height: "auto", objectFit: "contain" }} />
         </div>
         <div>
           <strong>Company</strong>
@@ -22,8 +18,7 @@ export function PublicFooter() {
         <div>
           <strong>Partners</strong>
           <Link href="/retailers">Retailers</Link>
-          <Link href="/b2b">B2B</Link>
-          <Link href="/login">Partner Login</Link>
+          <Link href="/login">Login</Link>
           <Link href="/contact-us">Contact</Link>
         </div>
         <div>

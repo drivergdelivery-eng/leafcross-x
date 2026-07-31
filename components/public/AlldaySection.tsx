@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-const tabs = [
+type TabItem = { title: string; body: string };
+
+const defaultTabs: TabItem[] = [
   {
     title: "Community Focus",
     body: "We champion small craft growers in British Columbia, promoting community and raising awareness for BC craft cannabis.",
@@ -21,7 +23,8 @@ const tabs = [
   },
 ];
 
-export function AlldaySection() {
+export function AlldaySection({ tabs: propTabs }: { tabs?: TabItem[] }) {
+  const tabs = propTabs ?? defaultTabs;
   const [open, setOpen] = useState<number | null>(null);
 
   return (

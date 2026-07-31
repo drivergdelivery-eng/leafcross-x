@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Veteran Discount Program | Leaf Cross Biomedical",
+  description: "Leaf Cross Biomedical honours Canadian veterans with a dedicated discount program on premium cannabis products.",
+};
 
 const steps = [
   ["Enroll as Medical Patient", "Obtain medical documentation and register as a Leaf Cross medical patient."],

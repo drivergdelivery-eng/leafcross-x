@@ -1,11 +1,17 @@
-import { RetailerSectionPage } from "@/components/retailer/RetailerSectionPage";
+import { DashboardLayout } from "@/components/shared/DashboardLayout";
+import RetailerOrdersClient from "@/components/retailer/RetailerOrdersClient";
+
+const links = [
+  { label: "Dashboard",    href: "/retailer" },
+  { label: "Product Menu", href: "/retailer/products" },
+  { label: "Orders",       href: "/retailer/orders" },
+  { label: "Account",      href: "/retailer/account" },
+];
 
 export default function RetailerOrdersPage() {
   return (
-    <RetailerSectionPage
-      title="Orders"
-      description="Retailers can view orders and invoices. They can cancel only while the order is unpaid."
-      items={["Awaiting payment", "Payment received", "Shipped", "Completed"]}
-    />
+    <DashboardLayout title="My Orders" role="retailer" links={links}>
+      <RetailerOrdersClient />
+    </DashboardLayout>
   );
 }

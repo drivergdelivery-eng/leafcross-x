@@ -1,30 +1,15 @@
+import type { StrainItem } from "@/lib/data/siteContent";
+
 const CARD_W = 300;
 const CARD_H = 380;
 const GAP    = 14;
 
-const strains = [
-  { src: "/assets/strains/gas-daddy.jpg",         name: "Gas Daddy" },
-  { src: "/assets/strains/halle-berry.jpg",       name: "Halle Berry" },
-  { src: "/assets/grow/bud-close-1.jpg",          name: "" },
-  { src: "/assets/strains/joker.jpg",             name: "Joker" },
-  { src: "/assets/strains/lemon-cherry-soap.jpg", name: "Lemon Cherry Soap" },
-  { src: "/assets/strains/slumber-party.jpg",     name: "Slumber Party" },
-  { src: "/assets/grow/bud-close-2.jpg",          name: "" },
-  { src: "/assets/strains/sunset-sherbert.jpg",   name: "Sunset Sherbert" },
-  { src: "/assets/strains/sunset-soap.jpg",       name: "Sunset Soap" },
-  { src: "/assets/strains/abracadabra.jpg",       name: "Abracadabra" },
-  { src: "/assets/grow/bud-close-3.jpg",          name: "" },
-  { src: "/assets/strains/67.jpg",                name: "#67" },
-  { src: "/assets/strains/fx.jpg",                name: "FX" },
-  { src: "/assets/strains/fx-1.jpg",              name: "FX — Select 1" },
-  { src: "/assets/strains/fx-3.jpg",              name: "FX — Select 3" },
-];
+type Props = { eyebrow: string; title: string; desc: string; strains: StrainItem[] };
 
-const TRACK_W  = strains.length * (CARD_W + GAP);
-const DURATION = Math.round(TRACK_W / 72); // ~62s — premium slow glide
-
-export function PhenoHuntGallery() {
-  const doubled = [...strains, ...strains];
+export function PhenoHuntGallery({ eyebrow, title, desc, strains }: Props) {
+  const TRACK_W  = strains.length * (CARD_W + GAP);
+  const DURATION = Math.round(TRACK_W / 72);
+  const doubled  = [...strains, ...strains];
 
   return (
     <section style={{ background: "#050505", padding: "88px 0 0", overflow: "hidden" }}>
@@ -82,7 +67,7 @@ export function PhenoHuntGallery() {
           textTransform: "uppercase",
           letterSpacing: "0.18em",
         }}>
-          In The Garden
+          {eyebrow}
         </p>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}>
           <h2 style={{
@@ -94,7 +79,7 @@ export function PhenoHuntGallery() {
             letterSpacing: "0.06em",
             lineHeight: 1.05,
           }}>
-            Pheno Hunt
+            {title}
           </h2>
           <p style={{
             margin: 0,
@@ -103,7 +88,7 @@ export function PhenoHuntGallery() {
             maxWidth: 400,
             lineHeight: 1.6,
           }}>
-            We grow dozens of phenotypes to select only the best expression of each cultivar.
+            {desc}
           </p>
         </div>
       </div>

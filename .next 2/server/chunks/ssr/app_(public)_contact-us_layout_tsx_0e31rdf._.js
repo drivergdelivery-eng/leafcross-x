@@ -1,0 +1,3 @@
+module.exports=[85622,a=>{"use strict";a.s(["default",0,function({children:a}){return a},"metadata",0,{title:"Contact Us | Leaf Cross Biomedical",description:"Get in touch with the Leaf Cross Biomedical team in Nelson, BC. We're available to answer questions about wholesale, licensing, and partnerships."}])},93577,a=>{a.n(a.i(85622))}];
+
+//# sourceMappingURL=app_%28public%29_contact-us_layout_tsx_0e31rdf._.js.map

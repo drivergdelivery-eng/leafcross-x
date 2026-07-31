@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "B2B Client Program | Leaf Cross Biomedical",
+  description: "Join the Leaf Cross Biomedical B2B client program and gain access to exclusive wholesale pricing, private menus, and dedicated account management.",
+};
 
 export default function B2BClientsPage() {
   return (

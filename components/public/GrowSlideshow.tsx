@@ -1,119 +1,76 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const slides = [
-  "/assets/grow/facility-new-1.jpg",
-  "/assets/grow/facility-new-2.jpg",
-  "/assets/grow/facility-new-3.jpg",
-  "/assets/grow/facility-new-4.jpg",
-  "/assets/grow/facility-new-5.jpg",
-  "/assets/grow/grow-room-person.jpg",
-  "/assets/grow/facility-wide-1.jpg",
-  "/assets/grow/facility-wide-2.jpg",
-  "/assets/grow/bud-close-1.jpg",
-  "/assets/grow/bud-close-2.jpg",
-  "/assets/grow/bud-close-3.jpg",
-  "/assets/strains/gas-daddy.jpg",
-  "/assets/strains/slumber-party.jpg",
-  "/assets/strains/fx-3.jpg",
-  "/assets/strains/halle-berry.jpg",
-  "/assets/strains/joker.jpg",
-  "/assets/strains/lemon-cherry-soap.jpg",
-  "/assets/strains/67.jpg",
-  "/assets/strains/fx-1.jpg",
-  "/assets/strains/sunset-sherbert.jpg",
-  "/assets/strains/abracadabra.jpg",
-  "/assets/strains/sunset-soap.jpg",
-  "/assets/strains/fx.jpg",
-];
+type Props = { eyebrow: string; title: string; desc: string; slides: string[] };
 
-export function GrowSlideshow() {
+export function GrowSlideshow({ eyebrow, title, desc, slides }: Props) {
   const [current, setCurrent] = useState(0);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const len = slides.length;
+  const prev = () => setCurrent((c) => (c - 1 + len) % len);
+  const next = () => setCurrent((c) => (c + 1) % len);
 
-  const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
-  const next = () => setCurrent((c) => (c + 1) % slides.length);
-
-  // Show current + 1 on each side (looping)
-  const visible = [-1, 0, 1].map((offset) => ({
-    src: slides[(current + offset + slides.length) % slides.length],
-    offset,
-  }));
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent((c) => (c + 1) % len), 4000);
+    return () => clearInterval(timer);
+  }, [len]);
 
   return (
-    <section style={{ background: "#050706", padding: "96px 0" }}>
-      <div style={{ width: "min(1180px, calc(100% - 40px))", margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24, marginBottom: 40 }}>
-          <div>
-            <p style={{ color: "#2f4d26", fontSize: 13, fontWeight: 700, textTransform: "uppercase", margin: "0 0 10px" }}>Our Grow</p>
-            <h2 style={{ margin: 0, fontSize: "clamp(38px, 6vw, 80px)", lineHeight: 0.92, textTransform: "uppercase", color: "#fff" }}>
-              From the Facility
-            </h2>
-          </div>
-          <p style={{ maxWidth: 420, color: "rgba(255,255,255,0.62)", fontSize: 18, lineHeight: 1.5, margin: 0 }}>
-            Double-tier cultivation rooms, in-house genetics, and hands-on attention at every stage of the grow.
+    <section style={{ background: "#050706", padding: "88px 0" }}>
+      <div className="container">
+        {/* Header */}
+        <div style={{ marginBottom: 44 }}>
+          <p style={{ margin: "0 0 8px", color: "#00f6ff", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em" }}>
+            {eyebrow}
           </p>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}>
+            <h2 style={{ margin: 0, color: "#fff", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", lineHeight: 1.05 }}>
+              {title}
+            </h2>
+            <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 15, maxWidth: 400, lineHeight: 1.6 }}>
+              {desc}
+            </p>
+          </div>
         </div>
 
-        <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 12 }}>
-          {/* Prev arrow */}
+        {/* Carousel */}
+        <div style={{ position: "relative", borderRadius: 20, overflow: "hidden", aspectRatio: "16/9", background: "#0b0d0b" }}>
+          <Image
+            key={current}
+            src={slides[current]}
+            alt="Facility"
+            fill
+            style={{ objectFit: "cover", transition: "opacity 300ms ease" }}
+            sizes="100vw"
+            priority
+          />
+
+          {/* Arrows */}
           <button
             onClick={prev}
-            aria-label="Previous"
-            style={{
-              flexShrink: 0, width: 44, height: 44, borderRadius: "50%",
-              border: "1px solid rgba(255,255,255,0.25)",
-              background: "rgba(255,255,255,0.08)", color: "#fff",
-              fontSize: 24, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
+            style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 48, height: 48, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(0,0,0,0.5)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}
           >
-            ‹
+            <ChevronLeft size={22} />
           </button>
-
-          {/* Image strip */}
-          <div ref={trackRef} style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1.5fr 1fr", gap: 12, overflow: "hidden" }}>
-            {visible.map(({ src, offset }) => (
-              <div
-                key={src + offset}
-                style={{
-                  position: "relative",
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  aspectRatio: "3 / 4",
-                  opacity: offset === 0 ? 1 : 0.5,
-                  transition: "opacity 300ms ease",
-                  background: "#0b0d0b",
-                  cursor: offset !== 0 ? "pointer" : "default",
-                }}
-                onClick={() => offset !== 0 && setCurrent((current + offset + slides.length) % slides.length)}
-              >
-                <Image
-                  src={src}
-                  alt="Leaf Cross"
-                  fill
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Next arrow */}
           <button
             onClick={next}
-            aria-label="Next"
-            style={{
-              flexShrink: 0, width: 44, height: 44, borderRadius: "50%",
-              border: "1px solid rgba(255,255,255,0.25)",
-              background: "rgba(255,255,255,0.08)", color: "#fff",
-              fontSize: 24, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
+            style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 48, height: 48, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(0,0,0,0.5)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}
           >
-            ›
+            <ChevronRight size={22} />
           </button>
+
+          {/* Dots */}
+          <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8, zIndex: 10 }}>
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                style={{ width: i === current ? 24 : 8, height: 8, borderRadius: 4, border: "none", background: i === current ? "#00f6ff" : "rgba(255,255,255,0.35)", cursor: "pointer", padding: 0, transition: "all 250ms ease" }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -2,31 +2,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Network, Package, Factory, Truck } from "lucide-react";
+import type { B2BService } from "@/lib/data/siteContent";
 
-const services = [
-  {
-    Icon: Network,
-    title: "In-House Distribution",
-    body: "Take advantage of our in-house BC direct delivery portal, where clients can tap into our dedicated sales and marketing teams. Our portal provides a convenient platform for selling your products, allowing you to reach a wider audience while benefiting from the expertise of our seasoned professionals.",
-  },
-  {
-    Icon: Package,
-    title: "Procurement Services",
-    body: "At Leaf Cross Biomed, we understand the importance of quality cannabis materials. Our procurement services cover everything from bulk-dried cannabis to extracts and finished products. Leveraging our extensive network, we assist both domestic and international clients in procuring top-tier materials in Canada.",
-  },
-  {
-    Icon: Factory,
-    title: "Contract Manufacturing",
-    body: "Discover the seamless efficiency of Contract Manufacturing, where we provide end-to-end solutions through our vertically integrated partners. From processing dried cannabis, pre-rolls, extracts, beverages, vapes, tinctures, to capsules, we offer a comprehensive range of services. Whether managing your materials or third-party sourcing, trust our dedicated team for a streamlined journey from initial stages to the final product.",
-  },
-  {
-    Icon: Truck,
-    title: "Tolling Services",
-    body: "Leaf Cross Biomed provides excise stamping and tolling services to domestic clients, facilitating distribution to provincial distributors. Additionally, we extend our tolling services to international clients, streamlining the export process for both domestic and global markets. Our commitment to compliance ensures a smooth and efficient tolling experience for your business.",
-  },
-];
+const ICONS = [Network, Package, Factory, Truck];
 
-export default function B2BCarousel() {
+export default function B2BCarousel({ services }: { services: B2BService[] }) {
   const [active, setActive] = useState(0);
   const [dir, setDir] = useState<"next" | "prev">("next");
   const [animKey, setAnimKey] = useState(0);
@@ -34,113 +14,42 @@ export default function B2BCarousel() {
 
   const go = (direction: "next" | "prev") => {
     setDir(direction);
-    setActive(prev =>
-      direction === "next" ? (prev + 1) % n : (prev - 1 + n) % n
-    );
+    setActive(prev => direction === "next" ? (prev + 1) % n : (prev - 1 + n) % n);
     setAnimKey(k => k + 1);
   };
 
   const prevIdx = (active - 1 + n) % n;
   const nextIdx = (active + 1) % n;
   const cards = [
-    { ...services[prevIdx], center: false },
-    { ...services[active], center: true },
-    { ...services[nextIdx], center: false },
+    { ...services[prevIdx], Icon: ICONS[prevIdx % ICONS.length], center: false },
+    { ...services[active],  Icon: ICONS[active  % ICONS.length], center: true  },
+    { ...services[nextIdx], Icon: ICONS[nextIdx % ICONS.length], center: false },
   ];
 
   return (
     <>
       <style>{`
-        @keyframes b2bFromRight {
-          from { transform: translateX(60px); opacity: 0; }
-          to   { transform: translateX(0);    opacity: 1; }
-        }
-        @keyframes b2bFromLeft {
-          from { transform: translateX(-60px); opacity: 0; }
-          to   { transform: translateX(0);     opacity: 1; }
-        }
+        @keyframes b2bFromRight { from { transform:translateX(60px);  opacity:0; } to { transform:translateX(0); opacity:1; } }
+        @keyframes b2bFromLeft  { from { transform:translateX(-60px); opacity:0; } to { transform:translateX(0); opacity:1; } }
       `}</style>
 
-      <section style={{ padding: "0 24px 96px" }}>
-        <div
-          key={animKey}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1.3fr 1fr",
-            gap: 20,
-            alignItems: "center",
-            maxWidth: 1240,
-            margin: "0 auto 64px",
-            animation: `${dir === "next" ? "b2bFromRight" : "b2bFromLeft"} 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94) both`,
-          }}
-        >
+      <section style={{ padding:"0 24px 96px" }}>
+        <div key={animKey} style={{ display:"grid", gridTemplateColumns:"1fr 1.3fr 1fr", gap:20, alignItems:"center", maxWidth:1240, margin:"0 auto 64px", animation:`${dir==="next" ? "b2bFromRight" : "b2bFromLeft"} 0.42s cubic-bezier(0.25,0.46,0.45,0.94) both` }}>
           {cards.map(({ Icon, title, body, center }) => (
-            <div
-              key={title}
-              style={{
-                background: center ? "#0d0d0d" : "#1b1b1b",
-                borderRadius: 16,
-                padding: center ? "60px 44px" : "44px 30px",
-                textAlign: "center",
-                transform: center ? "translateY(-24px)" : "none",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 20,
-              }}
-            >
-              <Icon
-                size={center ? 76 : 56}
-                color="#00f6ff"
-                strokeWidth={1.5}
-              />
-              <h3 style={{
-                margin: 0,
-                color: "#fff",
-                fontSize: center ? 22 : 17,
-                fontWeight: 600,
-              }}>
-                {title}
-              </h3>
-              <p style={{
-                margin: 0,
-                color: "rgba(255,255,255,0.6)",
-                fontSize: center ? 15 : 13,
-                lineHeight: 1.75,
-              }}>
-                {body}
-              </p>
-              <Link href="/contact-us" style={{
-                color: "#fff",
-                fontSize: 14,
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                marginTop: 4,
-                textDecoration: "none",
-              }}>
+            <div key={title} style={{ background:center?"#0d0d0d":"#1b1b1b", borderRadius:16, padding:center?"60px 44px":"44px 30px", textAlign:"center", transform:center?"translateY(-24px)":"none", display:"flex", flexDirection:"column", alignItems:"center", gap:20 }}>
+              <Icon size={center?76:56} color="#00f6ff" strokeWidth={1.5} />
+              <h3 style={{ margin:0, color:"#fff", fontSize:center?22:17, fontWeight:600 }}>{title}</h3>
+              <p style={{ margin:0, color:"rgba(255,255,255,0.6)", fontSize:center?15:13, lineHeight:1.75 }}>{body}</p>
+              <Link href="/contact-us" style={{ color:"#fff", fontSize:14, fontWeight:600, display:"flex", alignItems:"center", gap:6, marginTop:4, textDecoration:"none" }}>
                 Learn More &rarr;
               </Link>
             </div>
           ))}
         </div>
-
-        {/* Arrow buttons */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
-          {(["prev", "next"] as const).map(d => (
-            <button
-              key={d}
-              onClick={() => go(d)}
-              style={{
-                width: 56, height: 56, borderRadius: "50%",
-                background: "#00f6ff", border: "none", cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}
-            >
-              {d === "prev"
-                ? <ArrowLeft size={22} color="#000" strokeWidth={2.5} />
-                : <ArrowRight size={22} color="#000" strokeWidth={2.5} />}
+        <div style={{ display:"flex", justifyContent:"center", gap:16 }}>
+          {(["prev","next"] as const).map(d => (
+            <button key={d} onClick={() => go(d)} style={{ width:56, height:56, borderRadius:"50%", background:"#00f6ff", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              {d==="prev" ? <ArrowLeft size={22} color="#000" strokeWidth={2.5} /> : <ArrowRight size={22} color="#000" strokeWidth={2.5} />}
             </button>
           ))}
         </div>

@@ -4,7 +4,6 @@ import CartClient from "@/components/retailer/CartClient";
 const links = [
   { label: "Dashboard",    href: "/retailer" },
   { label: "Product Menu", href: "/retailer/products" },
-  { label: "Cart",         href: "/retailer/cart" },
   { label: "Orders",       href: "/retailer/orders" },
   { label: "Account",      href: "/retailer/account" },
 ];

@@ -2,17 +2,82 @@
 import { useState, useRef } from "react";
 import { extractedAssets } from "@/lib/data/assets";
 import Image from "next/image";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, CheckCircle } from "lucide-react";
 
 export default function RetailersApplyPage() {
-  const [agreed, setAgreed]     = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const [agreed, setAgreed]         = useState(false);
+  const [fileName, setFileName]     = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragging, setDragging]     = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted]   = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File | null | undefined) => {
-    if (file) setFileName(file.name);
+    if (file) { setFileName(file.name); setSelectedFile(file); }
   };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!agreed) return;
+    setSubmitting(true);
+    setSubmitError("");
+
+    const raw = new FormData(e.currentTarget);
+    const fd  = new FormData();
+    fd.append("business_name",           (raw.get("storeName")      as string) || "");
+    fd.append("contact_name",            (raw.get("contactName")    as string) || "");
+    fd.append("email",                   (raw.get("email")          as string) || "");
+    fd.append("phone",                   (raw.get("phone")          as string) || "");
+    fd.append("website",                 (raw.get("website")        as string) || "");
+    fd.append("business_address",        (raw.get("address")        as string) || "");
+    fd.append("city",                    (raw.get("city")           as string) || "");
+    fd.append("province",                (raw.get("province")       as string) || "");
+    fd.append("postal_code",             (raw.get("postcode")       as string) || "");
+    fd.append("country",                 (raw.get("country")        as string) || "Canada");
+    fd.append("business_license_number", (raw.get("licenseNumber")  as string) || "");
+    fd.append("license_expiry_date",     (raw.get("licenseExpiry")  as string) || "");
+    fd.append("notes",                   (raw.get("notes")          as string) || "");
+    if (selectedFile) fd.append("license", selectedFile);
+
+    const res = await fetch("/api/retailers/apply", {
+      method: "POST",
+      body: fd,
+    });
+
+    const json = await res.json();
+    setSubmitting(false);
+
+    if (!res.ok) {
+      setSubmitError(json.error || "Something went wrong. Please try again.");
+    } else {
+      setSubmitted(true);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <main style={{ minHeight: "100vh", background: "#050706", display: "flex", alignItems: "center", justifyContent: "center", padding: "64px 20px" }}>
+        <div style={{ textAlign: "center", maxWidth: 520 }}>
+          <CheckCircle size={64} color="#00f6ff" style={{ marginBottom: 24 }} />
+          <h1 style={{ margin: "0 0 16px", color: "#fff", fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 800, textTransform: "uppercase" }}>
+            Application Submitted
+          </h1>
+          <p style={{ margin: "0 0 32px", color: "rgba(255,255,255,0.6)", fontSize: 17, lineHeight: 1.7 }}>
+            Thank you! We&apos;ve received your application and will review it shortly. You&apos;ll hear from us at the email you provided.
+          </p>
+          <a href="/" style={{
+            display: "inline-flex", alignItems: "center", padding: "14px 36px", borderRadius: 999,
+            background: "#00f6ff", color: "#000", fontSize: 13, fontWeight: 800,
+            textTransform: "uppercase", letterSpacing: "0.1em", textDecoration: "none",
+          }}>
+            Back to Home
+          </a>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main style={{ minHeight: "100vh", background: "#050706", padding: "64px 20px 100px" }}>
@@ -80,7 +145,7 @@ export default function RetailersApplyPage() {
         </div>
 
         {/* ── Form ── */}
-        <form className="formPanel" onSubmit={e => e.preventDefault()} style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        <form className="formPanel applyForm" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
           {/* Business Info */}
           <p style={{ margin: "0 0 24px", color: "#fff", fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 12 }}>
@@ -106,10 +171,6 @@ export default function RetailersApplyPage() {
             <div className="field">
               <label htmlFor="website">Website (optional)</label>
               <input id="website" name="website" placeholder="www.yourstore.com" />
-            </div>
-            <div className="field">
-              <label htmlFor="gst">Company GST Number</label>
-              <input id="gst" name="gst" placeholder="e.g. 123456789RT0001" />
             </div>
           </div>
 
@@ -207,19 +268,18 @@ export default function RetailersApplyPage() {
             <p style={{ margin: "0 0 18px", color: "rgba(255,255,255,0.55)", fontSize: 13, lineHeight: 1.7 }}>
               All Direct Delivery account applications are subject to review. Leaf Cross reserves the right to approve or decline applications, and to limit product availability or purchasing access, at its sole discretion and in accordance with applicable laws and regulations.
             </p>
-            <label style={{ display: "flex", alignItems: "flex-start", gap: 14, cursor: "pointer" }}>
-              <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} />
-              <div
-                onClick={() => setAgreed(v => !v)}
-                style={{
-                  flexShrink: 0, marginTop: 2,
-                  width: 20, height: 20, borderRadius: 5,
-                  border: `2px solid ${agreed ? "#00f6ff" : "rgba(255,255,255,0.25)"}`,
-                  background: agreed ? "#00f6ff" : "transparent",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all 160ms ease", cursor: "pointer",
-                }}
-              >
+            <div
+              onClick={() => setAgreed(v => !v)}
+              style={{ display: "flex", alignItems: "flex-start", gap: 14, cursor: "pointer" }}
+            >
+              <div style={{
+                flexShrink: 0, marginTop: 2,
+                width: 20, height: 20, borderRadius: 5,
+                border: `2px solid ${agreed ? "#00f6ff" : "rgba(255,255,255,0.25)"}`,
+                background: agreed ? "#00f6ff" : "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 160ms ease",
+              }}>
                 {agreed && (
                   <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
                     <path d="M1 4.5L4 7.5L10 1" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -229,22 +289,28 @@ export default function RetailersApplyPage() {
               <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, lineHeight: 1.55, userSelect: "none" }}>
                 I have read and understood the above terms and consent to the review of this application by Leaf Cross Biomedical.
               </span>
-            </label>
+            </div>
           </div>
+
+          {submitError && (
+            <div style={{ marginBottom: 16, padding: "12px 16px", borderRadius: 8, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171", fontSize: 14 }}>
+              {submitError}
+            </div>
+          )}
 
           {/* Submit */}
           <button
             className="button"
             type="submit"
-            disabled={!agreed}
+            disabled={!agreed || submitting}
             style={{
               width: "100%",
-              opacity: agreed ? 1 : 0.4,
-              cursor: agreed ? "pointer" : "not-allowed",
+              opacity: agreed && !submitting ? 1 : 0.4,
+              cursor: agreed && !submitting ? "pointer" : "not-allowed",
               transition: "opacity 200ms ease",
             }}
           >
-            Submit Application
+            {submitting ? "Submitting…" : "Submit Application"}
           </button>
           {!agreed && (
             <p style={{ margin: "10px 0 0", textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12 }}>

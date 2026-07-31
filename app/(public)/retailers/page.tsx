@@ -1,5 +1,14 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { UserPlus, LogIn, ShoppingCart, CreditCard, Truck } from "lucide-react";
+import { getSiteContent } from "@/lib/data/getSiteContent";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Retailer Portal | Leaf Cross Biomedical",
+  description: "Licensed Canadian cannabis retailers can apply for a Leaf Cross Biomedical partner account to access private menus, place orders, and manage their account online.",
+};
 
 const steps = [
   { icon: UserPlus,    label: "Register" },
@@ -9,7 +18,8 @@ const steps = [
   { icon: Truck,       label: "Shipping" },
 ];
 
-export default function RetailersPage() {
+export default async function RetailersPage() {
+  const c = await getSiteContent();
   return (
     <main style={{ background: "#000", minHeight: "100vh" }}>
 
@@ -86,9 +96,7 @@ export default function RetailersPage() {
         <div style={{ width: "min(860px, calc(100% - 40px))", margin: "0 auto 48px", textAlign: "center" }}>
           <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", fontSize: "clamp(14px, 1.4vw, 17px)", lineHeight: 1.75 }}>
             <span style={{ color: "#00f6ff", fontWeight: 700 }}>Note: </span>
-            We have NO case limit per SKU. We reserve the right to cancel your order if payment is not received within 48 hours.
-            To ensure shipping the same day, all payments must be received before 11am, or else it will be processed on the next
-            business day. All sales are final.
+            {c.retailersNote}
           </p>
         </div>
 
@@ -106,7 +114,7 @@ export default function RetailersPage() {
           Login
         </h2>
         <p style={{ margin: "0 0 36px", color: "rgba(255,255,255,0.55)", fontSize: 18, lineHeight: 1.6, maxWidth: 480, marginInline: "auto" }}>
-          Already an approved retailer? Log in to access your private menu, cart, and order history.
+          {c.retailersLoginSubtitle}
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/login" style={{

@@ -23,15 +23,25 @@ export function PublicStyles() {
       .brandMark img {
         width: 86px;
         height: auto;
+        filter: brightness(0) invert(1);
       }
 
       .publicNav {
         display: flex;
         justify-content: center;
         gap: 38px;
-        color: #fff;
+        color: rgba(255,255,255,0.75);
         font-size: 20px;
         font-weight: 400;
+      }
+
+      .publicNav a {
+        color: rgba(255,255,255,0.75);
+        transition: color 0.15s ease;
+      }
+
+      .publicNav a:hover {
+        color: #00f6ff;
       }
 
       .headerActions {
@@ -82,15 +92,15 @@ export function PublicStyles() {
         height: 100%;
         object-fit: cover;
         object-position: center;
-        opacity: 0.56;
+        opacity: 0.82;
       }
 
       .heroShade {
         position: absolute;
         inset: 0;
         background:
-          linear-gradient(90deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 42%, rgba(0,0,0,0.28) 100%),
-          linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.2));
+          linear-gradient(90deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.65) 42%, rgba(0,0,0,0.08) 100%),
+          linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1));
       }
 
       .heroInner {
@@ -365,6 +375,32 @@ export function PublicStyles() {
         color: rgba(255,255,255,0.72);
       }
 
+      .darkSection .field label {
+        color: rgba(255,255,255,0.65);
+      }
+
+      .darkSection .field input,
+      .darkSection .field textarea,
+      .darkSection .field select {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 6px;
+        color: #fff;
+      }
+
+      .darkSection .field input:focus,
+      .darkSection .field textarea:focus,
+      .darkSection .field select:focus {
+        outline: none;
+        border-color: rgba(0,246,255,0.5);
+        background: rgba(255,255,255,0.09);
+      }
+
+      .darkSection .field input::placeholder,
+      .darkSection .field textarea::placeholder {
+        color: rgba(255,255,255,0.25);
+      }
+
       .statementGrid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -586,12 +622,13 @@ export function PublicStyles() {
         min-height: 100vh;
         display: grid;
         grid-template-columns: 260px 1fr;
-        background: #f3f6ed;
+        background: #0d0d0d;
+        color: #fff;
       }
 
       .dashboardNav {
-        border-right: 1px solid var(--line);
-        background: var(--white);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        background: #000;
         padding: 26px;
         display: flex;
         flex-direction: column;
@@ -604,23 +641,28 @@ export function PublicStyles() {
         width: 145px;
         height: auto;
         margin-bottom: 28px;
+        filter: brightness(0) invert(1);
       }
 
       .dashboardNav a {
         display: block;
-        border-radius: 4px;
+        border-radius: 6px;
         padding: 11px 12px;
-        color: #000;
+        color: rgba(255,255,255,0.6);
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 600;
+        transition: background 0.15s ease, color 0.15s ease;
       }
 
       .dashboardNav a:hover {
-        background: rgba(0,0,0,0.06);
+        background: rgba(255,255,255,0.08);
+        color: #00f6ff;
       }
 
       .dashboardMain {
         padding: 34px;
+        background: #0d0d0d;
+        color: #fff;
       }
 
       .statGrid {
@@ -661,8 +703,8 @@ export function PublicStyles() {
       }
 
       .publicFooter {
-        border-top: 1px solid var(--line);
-        background: #eef2e6;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        background: #000;
         padding: 48px 0;
       }
 
@@ -674,7 +716,7 @@ export function PublicStyles() {
 
       .footerGrid p {
         max-width: 340px;
-        color: var(--muted);
+        color: rgba(255,255,255,0.45);
         line-height: 1.6;
       }
 
@@ -685,11 +727,17 @@ export function PublicStyles() {
 
       .footerGrid strong {
         margin-bottom: 10px;
+        color: #fff;
       }
 
       .footerGrid a {
-        color: var(--muted);
+        color: rgba(255,255,255,0.45);
         margin: 8px 0;
+        transition: color 0.15s ease;
+      }
+
+      .footerGrid a:hover {
+        color: #00f6ff;
       }
 
       @media (max-width: 980px) {
@@ -765,6 +813,30 @@ export function PublicStyles() {
         .homeBrandGrid {
           grid-template-columns: 1fr;
         }
+      }
+
+      /* ── Responsive helpers used by dashboard/retailer pages ─────────── */
+      .rGrid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+      .rGrid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px 24px; }
+      .cartLayout { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
+      .productModal { display: grid; grid-template-columns: 320px 1fr; }
+      .productModalLeft { border-radius: 20px 0 0 20px; }
+      .orderRow { display: grid; grid-template-columns: 1fr 160px 120px 110px 28px; gap: 12px; align-items: center; padding: 16px 20px; cursor: pointer; }
+
+      @media (max-width: 768px) {
+        .cartLayout { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 640px) {
+        .rGrid2, .rGrid3 { grid-template-columns: 1fr; }
+
+        .productModal { grid-template-columns: 1fr; }
+        .productModalLeft { border-radius: 20px 20px 0 0; min-height: 220px !important; }
+
+        .orderRow {
+          grid-template-columns: 1fr auto 28px;
+        }
+        .orderRowHide { display: none; }
       }
     `}</style>
   );

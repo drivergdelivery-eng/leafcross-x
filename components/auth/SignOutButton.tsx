@@ -23,15 +23,16 @@ export default function SignOutButton() {
         gap: 8,
         background: "none",
         border: "none",
-        borderTop: "1px solid rgba(0,0,0,0.08)",
+        borderTop: "1px solid rgba(255,255,255,0.1)",
         paddingTop: 16,
-        color: "rgba(0,0,0,0.45)",
+        color: "rgba(255,255,255,0.35)",
         fontSize: 13,
-        fontWeight: 700,
+        fontWeight: 600,
         cursor: "pointer",
         textAlign: "left",
         width: "100%",
         letterSpacing: "0.02em",
+        transition: "color 0.15s ease",
       }}
     >
       <LogOut size={15} strokeWidth={2} />

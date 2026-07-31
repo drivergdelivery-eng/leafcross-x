@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { CalendarClock, FileText, PackageCheck } from "lucide-react";
 import { PageHero } from "@/components/public/PageHero";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Subscription Orders | Leaf Cross Biomedical",
+  description: "Set up recurring cannabis orders with Leaf Cross Biomedical for consistent supply and priority access to new products.",
+};
 import { monthlySubscription, paymentInstructions } from "@/lib/data/site";
 
 export default function SubscriptionPage() {
